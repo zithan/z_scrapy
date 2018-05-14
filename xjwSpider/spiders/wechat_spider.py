@@ -1,28 +1,36 @@
 import scrapy
+import os
 from scrapy import Request
-
-import re
 
 from selenium import webdriver
 from pydispatch import dispatcher
 from scrapy import signals
 
+from xjwSpider.items import WechatArticleItem
+
 from datetime import datetime
 import hashlib
 
-import urllib3
+from urllib import request
 
 class WechatSpider(scrapy.Spider):
     name = "wechat"
+    base_url = 'http://weixin.sogou.com/weixin?type=1&s_from=input&query='
     allowed_domains = ["mp.weixin.qq.com"]
     start_urls = [
         # 欧普灯饰
-        # "http://weixin.sogou.com/weixin?type=1&s_from=input&query=opple4008309609",
-        # 华艺灯饰照明股份
-        # "http://weixin.sogou.com/weixin?type=1&s_from=input&query=huayijituan2007",
+        base_url + "opple4008309609",
+        # 每日经济新闻
+        base_url + "nbdnews",
         # 艺罗兰灯饰
-        "http://weixin.sogou.com/weixin?type=1&s_from=input&query=YILUOLANLIGHTING"
+        base_url + "YILUOLANLIGHTING"
     ]
+
+    # headers = {
+    #     "HOST": "img01.sogoucdn.com",
+    #     "Referer": "http://img01.sogoucdn.com",
+    #     'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0"
+    # }
 
     def __init__(self):
         self.browser = webdriver.Chrome(executable_path="/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver")
@@ -36,9 +44,9 @@ class WechatSpider(scrapy.Spider):
 
     def parse(self, response):
         """
-        1、根据公众号的id搜索微信公众号
+        1、根据公众号的id搜索微信公众号，取第一个
         2、进入公众号获取搜狗10篇文章
-        3、爬取每篇文章
+        3、爬取当天文章
         :param response:
         :return:
         """
@@ -80,8 +88,10 @@ class WechatSpider(scrapy.Spider):
             article_path = response.xpath('/html/body/div/div[1]/div[3]/div[1]/div[2]/div/div/h4/@hrefs').extract()[0].strip()
             article_url = ["https://mp.weixin.qq.com" + article_path]
 
+            brand_avatar = response.xpath('/html/body/div[1]/div[1]/div[1]/div[1]/span/img/@src').extract()[0].strip()
+
             try:
-                yield Request(article_url[0], callback=self.parse_item)
+                yield Request(article_url[0], meta={"brand_avatar": brand_avatar}, callback=self.parse_item)
             except Exception as e:
                 print('访问文章异常')
                 pass
@@ -92,13 +102,14 @@ class WechatSpider(scrapy.Spider):
         print('url---->' + response.url)
         print('response---->' + response.__str__())
 
+        brand_avatar = response.meta.get("brand_avatar", "")
         title = response.xpath('//*[@id="activity-name"]/text()').extract()[0].strip()
         brand = response.xpath('//*[@id="profileBt"]/a/text()').extract()[0].strip()
         create_time = response.xpath('//*[@id="publish_time"]/text()').extract()[0].strip()
         try:
             author = response.xpath('//*[@id="meta_content"]/p/text()').extract()[0].replace('作者', '').strip()
         except Exception as e:
-            author = ''
+            author = '无'
 
         article_content_imgs = response.xpath('//div[@id="js_content"]//img')
         # 下载、替换微信文章中的图片
@@ -113,39 +124,41 @@ class WechatSpider(scrapy.Spider):
             if img_type.lower().strip() != "bmp" and img_type.lower().strip() != "jpg" and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg":
                 img_type = "jpg"
 
-            # timestamp = self.get_time_stamp()
-            img_url = hashlib.md5(img_src.encode(encoding='UTF-8')).hexdigest()
-            abs_path = '/wechat/content/' + img_url + '.' + img_type
-            save_path = '/images' + abs_path
+            project_dir = os.path.abspath(os.path.dirname(__file__))
+            img_name = hashlib.md5(img_src.encode(encoding='UTF-8')).hexdigest()
+            abs_path = img_name + '.' + img_type
+            save_path = project_dir + '/images/' + abs_path
 
-            if img_data_src == None or img_data_src == '':
-                continue
+            # if img_data_src == None or img_data_src == '':
+            #     continue
+
+            # yield scrapy.Request(img_data_src, meta={"save_path": save_path}, callback=self.upload_content_image)
 
             img.root.attrib['src'] = abs_path
             img.root.attrib['data-src'] = abs_path
 
-            # content = response.xpath('//div[@id="js_content"]').extract()[0]
-            content = self.get_text(response.xpath('//div[@id="js_content"]').extract())
+        # content = response.xpath('//div[@id="js_content"]').extract()[0]
+        content = self.get_text(response.xpath('//div[@id="js_content"]').extract())
 
-            # urllib3.urlretrieve(img_data_src.encode("utf8"), save_path)
+        article_item = WechatArticleItem()
 
-            # 判断图片是否包含二维码，如果包含则去掉
-            # 这里用python调用zbar的exe来识别二维码，因为服务器是windows 2003，装zbar插件库各种问题。
-            # if self.check_qr_code(save_path):
-            #     img.root.drop_tree()
-            # else:
-            #     img.root.attrib['src'] = abs_path
-            #     img.root.attrib['data-src'] = abs_path
 
-            # 判断图片是否包含二维码，如果包含则去掉
-            # qr_code = self.get_qr_code(save_path)
-            # if None != qr_code and '' != qr_code:
-            #     img.root.drop_tree()
-            # else :
-            #     img.root.attrib['src'] = abs_path
-            #     img.root.attrib['data-src'] = abs_path
+        article_item["id"] = hashlib.md5(response.url.encode(encoding='UTF-8')).hexdigest()
+        article_item["title"] = title
+        article_item["brand"] = brand
+        article_item["create_time"] = create_time
+        article_item["author"] = author
+        article_item["content"] = content
+        article_item["wechat_image_urls"] = [brand_avatar]
+
+        yield article_item
 
         pass
+
+    def upload_content_image(self, response):
+        with open(response.meta.get("save_path"), "wb") as f:
+            f.write(response.body)
+            f.close()
 
     def get_text(self, texts):
         text = ""

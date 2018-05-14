@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import os
+
 # Scrapy settings for xjwSpider project
 #
 # For simplicity, this file contains only settings considered important or
@@ -68,11 +70,17 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
+ITEM_PIPELINES = {
 #    'xjwSpider.pipelines.XjwspiderPipeline': 300,
-#}
+    'xjwSpider.pipelines.MysqlPipelin': 301,
+    # 'xjwSpider.pipelines.ArticleImagePipeline': 300,
+}
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0"
+# IMAGES_URLS_FIELD = "wechat_image_urls"
+# project_dir = os.path.abspath(os.path.dirname(__file__))
+# IMAGES_STORE = os.path.join(project_dir, 'images')
+
+# USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0"
 
 RANDOM_UA_TYPE = "random"
 
