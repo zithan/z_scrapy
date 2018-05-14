@@ -56,6 +56,7 @@ DOWNLOADER_MIDDLEWARES = {
    # 'xjwSpider.middlewares.XjwspiderDownloaderMiddleware': 1,
    'xjwSpider.middlewares.RandomUserAgentMiddlware': 543,
    'xjwSpider.middlewares.RandomProxyMiddleware': 544,
+   'xjwSpider.middlewares.JSPageMiddleware': 545,
    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
 }
 
