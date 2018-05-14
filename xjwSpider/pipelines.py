@@ -30,7 +30,7 @@ class MysqlPipelin(object):
 
     def process_item(self, item, spider):
         insert_sql = """
-            insert into article(title, brand, author, content, create_time)
+            insert into article2(title, brand, author, content, create_time)
             VALUES (%s, %s, %s, %s, %s)
         """
         self.cursor.execute(insert_sql, (item["title"], item["brand"], item["author"], item["content"], item["create_time"]))

@@ -11,7 +11,9 @@ from xjwSpider.items import WechatArticleItem
 from datetime import datetime
 import hashlib
 
-from urllib import request
+from urllib.request import urlretrieve
+
+from tools.get_proxy_ip import GetIpThread
 
 class WechatSpider(scrapy.Spider):
     name = "wechat"
@@ -19,11 +21,12 @@ class WechatSpider(scrapy.Spider):
     allowed_domains = ["mp.weixin.qq.com"]
     start_urls = [
         # 欧普灯饰
-        base_url + "opple4008309609",
+        # base_url + "opple4008309609",
         # 每日经济新闻
-        base_url + "nbdnews",
+        # base_url + "nbdnews",
         # 艺罗兰灯饰
-        base_url + "YILUOLANLIGHTING"
+        # base_url + "YILUOLANLIGHTING"
+        'https://proxy.mimvp.com/exist.php'
     ]
 
     # headers = {
@@ -33,7 +36,14 @@ class WechatSpider(scrapy.Spider):
     # }
 
     def __init__(self):
-        self.browser = webdriver.Chrome(executable_path="/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver")
+        get_ip = GetIpThread()
+        ip_and_port = get_ip.get_one_ip()
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--proxy-server=' + ip_and_port)
+        self.browser = webdriver.Chrome(
+            executable_path="/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver",
+            chrome_options=chrome_options
+        )
         super(WechatSpider, self).__init__()
         dispatcher.connect(self.spider_closed, signals.spider_closed)
 
@@ -132,7 +142,7 @@ class WechatSpider(scrapy.Spider):
             # if img_data_src == None or img_data_src == '':
             #     continue
 
-            # yield scrapy.Request(img_data_src, meta={"save_path": save_path}, callback=self.upload_content_image)
+            urlretrieve(img_data_src, "/Volumes/zithan4card/z4code/mypython/xjwSpider/xjwSpider/spiders/images/" + img_name + ".jpg")
 
             img.root.attrib['src'] = abs_path
             img.root.attrib['data-src'] = abs_path

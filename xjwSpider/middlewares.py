@@ -10,6 +10,10 @@ from scrapy import signals
 from fake_useragent import UserAgent
 from tools.get_proxy_ip import GetIpThread
 
+from scrapy.http import HtmlResponse
+import time
+from scrapy import signals
+
 
 class XjwspiderSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -124,24 +128,21 @@ class RandomUserAgentMiddlware(object):
         request.headers.setdefault('User-Agent', get_ua())
         # request.meta["proxy"] = "https://106.111.45.183:61234"
 
+
 class RandomProxyMiddleware(object):
-    #动态设置ip代理
+    # 动态设置ip代理
+
     def process_request(self, request, spider):
         get_ip = GetIpThread()
-        request.meta["proxy"] = get_ip.get_one_ip()
+        ip_and_port = get_ip.get_one_ip()
+        request.meta["proxy"] = ip_and_port
 
-
-from scrapy.http import HtmlResponse
-import time
-from selenium import webdriver
-from scrapy import signals
 
 class JSPageMiddleware(object):
+    # 通过chrome请求动态网页
 
-    #通过chrome请求动态网页
     def process_request(self, request, spider):
         if spider.name == "wechat":
-            # browser = webdriver.Chrome(executable_path="/usr/local/bin/chromedriver")
             spider.browser.get(request.url)
 
             time.sleep(3)

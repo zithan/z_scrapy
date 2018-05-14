@@ -56,10 +56,11 @@ COOKIES_ENABLED = False
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
    # 'xjwSpider.middlewares.XjwspiderDownloaderMiddleware': 1,
-   'xjwSpider.middlewares.RandomUserAgentMiddlware': 543,
-   'xjwSpider.middlewares.RandomProxyMiddleware': 544,
-   'xjwSpider.middlewares.JSPageMiddleware': 545,
-   'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'xjwSpider.middlewares.JSPageMiddleware': 105,
+    'xjwSpider.middlewares.RandomUserAgentMiddlware': 101,
+    'xjwSpider.middlewares.RandomProxyMiddleware': 100,
+    # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
 }
 
 # Enable or disable extensions
