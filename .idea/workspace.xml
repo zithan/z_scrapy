@@ -94,7 +94,7 @@
       <find>ArticleImagePipeline</find>
       <find>RandomProxyMiddleware</find>
       <find>DOWNLOAD_DELAY</find>
-      <find />
+      <find>effective ip</find>
       <find>get_one_ip</find>
       <find>aluo</find>
       <find>debug</find>
@@ -347,8 +347,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1280" height="773" extended-state="1" />
-    <editor active="true" />
+    <frame x="0" y="23" width="1280" height="773" extended-state="0" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
@@ -356,7 +355,7 @@
       <window_info anchor="bottom" id="Run" order="2" weight="0.5712755" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3290461" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.3290461" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.53483385" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.5344564" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1987076" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
