@@ -22,10 +22,10 @@ class GetIpThread(object):
         else:
             code = response.status_code
             if code >= 200 and code < 300:
-                print("--------- valid ip and port ---------")
+                print("valid ip and port --------- {0}".format(proxy_url))
                 return True
             else:
-                print("--------- invalid ip and port ---------")
+                print("--------- invalid ip and port ---------{0}".format(proxy_url))
                 return False
 
     def get_one_ip(self):
@@ -39,8 +39,8 @@ class GetIpThread(object):
         judge_re = self.judge_ip(ip_and_port)
         if judge_re:
             return "http://{0}".format(ip_and_port)
-        else:
-            return self.get_one_ip()
+        # else:
+            # return self.get_one_ip()
 
 
 if __name__ == '__main__':

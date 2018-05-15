@@ -10,23 +10,29 @@ from xjwSpider.items import WechatArticleItem
 
 from datetime import datetime
 import hashlib
+import re
 
 from urllib.request import urlretrieve
+from urllib import parse
 
 from tools.get_proxy_ip import GetIpThread
+
+import time
+
+from tools.wechat_user import WechatUser
 
 class WechatSpider(scrapy.Spider):
     name = "wechat"
     base_url = 'http://weixin.sogou.com/weixin?type=1&s_from=input&query='
-    allowed_domains = ["mp.weixin.qq.com"]
+    allowed_domains = ["weixin.sogou.com", "mp.weixin.qq.com"]
     start_urls = [
-        # 欧普灯饰
-        # base_url + "opple4008309609",
+        # 亚太灯饰传媒
+        # base_url + "aluoyidi888",
         # 每日经济新闻
         # base_url + "nbdnews",
         # 艺罗兰灯饰
         # base_url + "YILUOLANLIGHTING"
-        'https://proxy.mimvp.com/exist.php'
+        # 'https://proxy.mimvp.com/exist.php'
     ]
 
     # headers = {
@@ -36,10 +42,25 @@ class WechatSpider(scrapy.Spider):
     # }
 
     def __init__(self):
+        wechat_ids = WechatUser().get_wechat_ids()
+        start_urls_list = []
+        for wechat_id in wechat_ids:
+            start_urls_list.append(self.base_url + wechat_id["wechat_id"])
+
+        self.start_urls = start_urls_list
+
         get_ip = GetIpThread()
         ip_and_port = get_ip.get_one_ip()
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--proxy-server=' + ip_and_port)
+        # chrome_options.add_argument('--proxy-server={0}'.format(ip_and_port))
+
+        # prefs = {
+        #     'profile.default_content_setting_values': {
+        #         'images': 2
+        #     }
+        # }
+        # chrome_options.add_experimental_option('prefs', prefs)
+
         self.browser = webdriver.Chrome(
             executable_path="/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver",
             chrome_options=chrome_options
@@ -49,7 +70,7 @@ class WechatSpider(scrapy.Spider):
 
     def spider_closed(self, spider):
         #当爬虫退出的时候关闭chrome
-        print("spider closed")
+        print("spider closed----> close chrome.....")
         self.browser.quit()
 
     def parse(self, response):
@@ -61,22 +82,41 @@ class WechatSpider(scrapy.Spider):
         :return:
         """
 
-        print('url---->' + response.url)
-        print('response---->' + response.__str__())
+        print('sogou url---->' + response.url)
+        print('sogou response---->' + response.__str__())
+
+        # 判断搜狗是否出现验证码
+        if re.match('http://weixin.sogou.com/antispider', response.url):
+            print('搜狗出现验证码2')
+            return
+
+        # try:
+        #     proxy_ip = response.xpath('//*[@id="mimvp-body"]/div[1]/div[1]/span[2]/font[1]/text()').extract()[0].strip()
+        #     print('当前代理ip为{0}'.format(proxy_ip))
+        #     return
+        # except Exception as e:
+        #     print('查看代理...异常')
+
 
         list_url = response.xpath('//div[@class="news-box"]/ul[@class="news-list2"]/li[1]/div[@class="gzh-box2"]/div[@class="img-box"]/a/@href').extract()
-        print("list_url:" + list_url.__str__())
+        print("wechat office url on sogou---->:" + list_url.__str__())
 
         try:
+            print("---------ready to wechat -----------")
             yield Request(list_url[0], callback=self.parse_list)
         except Exception as e:
-            pass
+            print("---获取微信公众号路径异常---")
 
-        pass
+        # 提取下一个并交给scrapy进行下载
+        # next_urls = ["aluoyidi888", "gh_0f86876af6ce", "opplezm"]
+        #
+        # for next_url in next_urls:
+        #     print('----next office is [{0}]-------'.format(next_url))
+        #     yield Request(url=self.base_url + next_url, callback=self.parse)
 
     def parse_list(self, response):
-        print('url---->' + response.url)
-        print('response---->' + response.__str__())
+        print('[wechat list] url---->' + response.url)
+        print('[wechat list] response---->' + response.__str__())
 
         # re_math = re.match(".*?('var msgList = \'{'.*'}}]}\';').*?", response.text)
 
@@ -86,31 +126,30 @@ class WechatSpider(scrapy.Spider):
         try:
             today_cards = response.xpath('//*[@id="history"]/div[1]/div[@class="weui_msg_card_hd"]/text()').extract()[0].strip()
         except Exception as e:
-            today_cards = ''
+            today_cards = '时间获取异常'
 
         if dateStr != today_cards:
-            print('今天没更新')
-            return
+            print('今天[没]更新，今天是----->' + today_cards)
         else:
-            print('今天有更新')
+            print('今天[有]更新，今天是----->' + today_cards)
             # article_title = response.xpath('/html/body/div/div[1]/div[3]/div[1]/div[2]/div/div/h4/text()').extract()[0].strip()
             # article_desc = response.xpath('/html/body/div/div[1]/div[3]/div[1]/div[2]/div/div/p[1]/text()').extract()[0].strip()
-            article_path = response.xpath('/html/body/div/div[1]/div[3]/div[1]/div[2]/div/div/h4/@hrefs').extract()[0].strip()
-            article_url = ["https://mp.weixin.qq.com" + article_path]
-
-            brand_avatar = response.xpath('/html/body/div[1]/div[1]/div[1]/div[1]/span/img/@src').extract()[0].strip()
 
             try:
+                brand_title = response.xpath('/html/body/div[1]/div[1]/div[1]/div[1]/div/strong/text()').extract()[0].strip()
+                article_title = response.xpath('//*[@id="WXAPPMSG1000000082"]/div/h4/text()').extract()[0].strip()
+                article_path = response.xpath('/html/body/div/div[1]/div[3]/div[1]/div[2]/div/div/h4/@hrefs').extract()[0].strip()
+                article_url = ["https://mp.weixin.qq.com" + article_path]
+                brand_avatar = response.xpath('/html/body/div[1]/div[1]/div[1]/div[1]/span/img/@src').extract()[0].strip()
+
                 yield Request(article_url[0], meta={"brand_avatar": brand_avatar}, callback=self.parse_item)
             except Exception as e:
                 print('访问文章异常')
-                pass
-
-        pass
 
     def parse_item(self, response):
-        print('url---->' + response.url)
-        print('response---->' + response.__str__())
+        # todo captcha
+        print('wechat item url---->' + response.url)
+        print('wechat item response---->' + response.__str__())
 
         brand_avatar = response.meta.get("brand_avatar", "")
         title = response.xpath('//*[@id="activity-name"]/text()').extract()[0].strip()
@@ -131,18 +170,19 @@ class WechatSpider(scrapy.Spider):
                 img_data_src = img_src
 
             img_type = self.get_text(img.xpath('./@data-type').extract())
-            if img_type.lower().strip() != "bmp" and img_type.lower().strip() != "jpg" and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg":
+            if img_type.lower().strip() != "bmp" and img_type.lower().strip() != "jpg" \
+                    and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg":
                 img_type = "jpg"
 
-            project_dir = os.path.abspath(os.path.dirname(__file__))
-            img_name = hashlib.md5(img_src.encode(encoding='UTF-8')).hexdigest()
+            img_name = hashlib.md5(img_data_src.encode(encoding='UTF-8')).hexdigest()
             abs_path = img_name + '.' + img_type
-            save_path = project_dir + '/images/' + abs_path
+            save_path = "/Volumes/zithan4card/z4code/mypython/xjwSpider/xjwSpider/spiders/images/" + abs_path
 
             # if img_data_src == None or img_data_src == '':
             #     continue
 
-            urlretrieve(img_data_src, "/Volumes/zithan4card/z4code/mypython/xjwSpider/xjwSpider/spiders/images/" + img_name + ".jpg")
+            # print('img_data_src---->' + img_data_src);
+            urlretrieve(img_data_src, save_path)
 
             img.root.attrib['src'] = abs_path
             img.root.attrib['data-src'] = abs_path
@@ -163,7 +203,6 @@ class WechatSpider(scrapy.Spider):
 
         yield article_item
 
-        pass
 
     def upload_content_image(self, response):
         with open(response.meta.get("save_path"), "wb") as f:

@@ -125,6 +125,7 @@ class RandomUserAgentMiddlware(object):
         def get_ua():
             return getattr(self.ua, self.ua_type)
 
+        print("-------User-Agent------{0}".format(get_ua()))
         request.headers.setdefault('User-Agent', get_ua())
         # request.meta["proxy"] = "https://106.111.45.183:61234"
 
@@ -142,10 +143,34 @@ class JSPageMiddleware(object):
     # 通过chrome请求动态网页
 
     def process_request(self, request, spider):
-        if spider.name == "wechat":
+        import re
+        is_match = re.match('http://mp.weixin.qq.com/profile', request.url.strip())
+        # is_match = True
+        if spider.name == "wechat" and is_match:
+            # from selenium import webdriver
+            # get_ip = GetIpThread()
+            # ip_and_port = get_ip.get_one_ip()
+            # chrome_options = webdriver.ChromeOptions()
+            # # chrome_options.add_argument('--proxy-server={0}'.format(ip_and_port))
+            #
+            # # prefs = {
+            # #     'profile.default_content_setting_values': {
+            # #         'images': 2
+            # #     }
+            # # }
+            # # chrome_options.add_experimental_option('prefs', prefs)
+            #
+            # browser = webdriver.Chrome(
+            #     executable_path="/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver",
+            #     chrome_options=chrome_options
+            # )
+
             spider.browser.get(request.url)
 
-            time.sleep(3)
-            print("访问:{0}".format(request.url))
+            time.sleep(8)
+            print("chromedriver-访问---------->:{0}".format(request.url))
 
-            return HtmlResponse(url=spider.browser.current_url, body=spider.browser.page_source, encoding="utf-8", request=request)
+            return HtmlResponse(
+                url=spider.browser.current_url,
+                body=spider.browser.page_source,
+                encoding="utf-8", request=request)

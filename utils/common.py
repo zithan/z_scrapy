@@ -23,6 +23,12 @@ def down_img(url2):
     urlretrieve(url2, "./images/captcha.jpg")
 
 
+def is_detail_url(url):
+    import re
+    return re.match('https://mp.weixin.qq.com/profile', url)
+
+
 if __name__ == "__main__":
-    url = 'https://mmbiz.qpic.cn/mmbiz_png/ajT9KUbORcwz828I7pWxN8XPfTiaDhStvMopGickCl41E3hiaGmW3HibnhnhSwepmoG7bpVo9j7ypTBiaW6bWd0Nagg/640?wx_fmt=png'
-    down_img(url)
+    url = 'http://mp.weixin.qq.com/profile?src=3&timestamp=1526356751&ver=1&signature=xTwF1KNdk5Fq3u4BQOKWZgkyz-8-nbeUeQfP670*w7G6RGDjtbs7SteH16BjpB*tuucD2asgJol1XGjhGSJ17g=='
+    # down_img(url)
+    print(is_detail_url(url))
