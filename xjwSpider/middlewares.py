@@ -158,6 +158,7 @@ class JSPageMiddleware(object):
                         print('发现搜狗验证码...尼玛...开始解码...')
 
                         # 截图
+                        time.sleep(5)
                         spider.browser.get_screenshot_as_file('wescreenshot_sg.png')
 
                         left = int(seccode_img_element.location['x'])
@@ -181,6 +182,7 @@ class JSPageMiddleware(object):
                         elem = spider.browser.find_element_by_id("seccodeInput")
                         elem.clear()
                         elem.send_keys(code)
+                        time.sleep(2)
                         spider.browser.find_element_by_id("submit").click()
 
                         # 延时5秒，等待完成页面跳转
@@ -220,6 +222,7 @@ class JSPageMiddleware(object):
                         elem = spider.browser.find_element_by_id("input")
                         elem.clear()
                         elem.send_keys(code)
+                        time.sleep(2)
                         spider.browser.find_element_by_id("bt").click()
 
                         # 延时5秒，等待完成页面跳转

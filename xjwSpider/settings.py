@@ -65,12 +65,11 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
-EXTENSIONS = {
-    'scrapy_jsonrpc.webservice.WebService': 500,
-    'scrapy.extensions.telnet.TelnetConsole': None,
-}
-
-JSONRPC_ENABLED = True
+# EXTENSIONS = {
+#     'scrapy_jsonrpc.webservice.WebService': 500,
+#     'scrapy.extensions.telnet.TelnetConsole': None,
+# }
+# JSONRPC_ENABLED = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
@@ -114,3 +113,5 @@ RETRY_ENABLED = False
 
 # 减小下载超时:
 DOWNLOAD_TIMEOUT = 15
+
+# REDIRECT_ENABLED = False

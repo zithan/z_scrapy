@@ -28,17 +28,27 @@ class MysqlPipelin(object):
                              cursorclass=pymysql.cursors.DictCursor)
         self.cursor = self.conn.cursor()
 
+    def is_exist(self, item):
+        select_sql = """
+            SELECT id FROM article WHERE article_hash_id = '{0}'
+        """.format(item['article_hash_id'])
+        self.cursor.execute(select_sql)
+        return self.cursor.fetchone()
+
     def process_item(self, item, spider):
+        if self.is_exist(self, item) > 0:
+            return
+
         insert_sql = """
-            insert into article(article_hash_id, user_id, title, digest, article_img, content, datetime)
+            INSERT INTO article(article_hash_id, user_id, title, digest, article_img, content, datetime)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         self.cursor.execute(insert_sql, (
             item["article_hash_id"],
             item["user_id"],
             item["title"],
-            item["digest"],
-            item["article_img"],
+            item["desc"],
+            item["article_icon_path"],
             item["content"],
             item["publish_time"]))
         self.conn.commit()

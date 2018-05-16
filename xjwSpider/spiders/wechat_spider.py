@@ -24,9 +24,9 @@ class WechatSpider(scrapy.Spider):
     allowed_domains = ["weixin.sogou.com", "mp.weixin.qq.com"]
     start_urls = [
         # 亚太灯饰传媒
-        # base_url + "aluoyidi888",
+        base_url + "aluoyidi888",
         # 每日经济新闻
-        base_url + "nbdnews",
+        # base_url + "nbdnews",
         # 艺罗兰灯饰
         # base_url + "YILUOLANLIGHTING"
         # 'https://proxy.mimvp.com/exist.php'
@@ -123,7 +123,7 @@ class WechatSpider(scrapy.Spider):
         # re_math = re.match(".*?('var msgList = \'{'.*'}}]}\';').*?", response.text)
 
         date = datetime.now().timetuple()
-        dateStr = str(date.tm_year) + u'年' + str(date.tm_mon) + u'月' + str(date.tm_mday) + u'日'
+        dateStr = str(date.tm_year) + u'年' + str(date.tm_mon) + u'月' + str(date.tm_mday-1) + u'日'
 
         try:
             today_cards = response.xpath('//*[@id="history"]/div[1]/div[@class="weui_msg_card_hd"]/text()')\
@@ -222,6 +222,15 @@ class WechatSpider(scrapy.Spider):
             publish_time = text[text.find('var ct = "')+10:text.find('var publish_time')].strip()
             publish_time = int(publish_time.rstrip('";'))
 
+            # 删除超链接
+            article_content_hrefs = response.xpath('//div[@id="js_content"]//a')
+            for href in article_content_hrefs:
+                try:
+                    href.root.getparent().drop_tree()
+                except Exception as e:
+                    print
+                    "del href exception:" + e.__str__()
+
             content_imgs = response.xpath('//div[@id="js_content"]//img')
             # 下载、替换微信文章中的图片
             for img in content_imgs:
@@ -231,18 +240,22 @@ class WechatSpider(scrapy.Spider):
                 if (img_data_src is None) or img_data_src == '':
                     img_data_src = img_src
 
+                if not re.match('http', img_data_src):
+                    img_data_src = "http:" + img_data_src
+
                 img_type = self.get_text(img.xpath('./@data-type').extract())
                 if img_type.lower().strip() != "bmp" and img_type.lower().strip() != "jpg" \
                         and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg":
                     img_type = "jpg"
 
-                content_img_name = hashlib.md5(img_data_src.encode(encoding='UTF-8')).hexdigest()
+                content_img_name = "{0}.{1}".format(
+                    hashlib.md5(img_data_src.encode(encoding='UTF-8')).hexdigest(),
+                    img_type)
 
                 # 相对目录
                 content_img_rel_dir = "images/{0}/{1}/article_content".format(
                     wechat_id,
-                    current_day
-                )
+                    current_day)
 
                 # 图片文件相对路径
                 img_path = "{0}/{1}".format(content_img_rel_dir, content_img_name)
