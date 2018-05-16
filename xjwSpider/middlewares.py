@@ -153,7 +153,39 @@ class JSPageMiddleware(object):
             try:
                 is_match_sogou = re.match('http://weixin.sogou.com/antispider', request.url.strip())
                 if is_match_sogou:
-                    seccode_image = spider.browser.find_element_by_id('seccodeImage')
+                    seccode_img_element = spider.browser.find_element_by_id('seccodeImage')
+                    if seccode_img_element:
+                        print('发现搜狗验证码...尼玛...开始解码...')
+
+                        # 截图
+                        spider.browser.get_screenshot_as_file('wescreenshot_sg.png')
+
+                        left = int(seccode_img_element.location['x'])
+                        top = int(seccode_img_element.location['y'])
+                        right = int(seccode_img_element.location['x'] + seccode_img_element.size['width'])
+                        bottom = int(seccode_img_element.location['y'] + seccode_img_element.size['height'])
+
+                        from PIL import Image
+                        # 通过Image处理图像
+                        im = Image.open('wescreenshot_sg.png')
+                        im = im.crop((left, top, right, bottom))
+                        # 保存验证码图片
+                        im.save('seccode.png')
+
+                        # im = open('seccode.jpg', 'rb').read()
+                        from tools.yundama import get_captcha_code
+                        code = get_captcha_code('seccode.png', 1006)
+                        print("搜狗验证码是------>{0}".format(code))
+
+                        # 模拟输入验证码，并提交
+                        elem = spider.browser.find_element_by_id("seccodeInput")
+                        elem.clear()
+                        elem.send_keys(code)
+                        spider.browser.find_element_by_id("submit").click()
+
+                        # 延时5秒，等待完成页面跳转
+                        time.sleep(3)
+
             except Exception as e:
                 print(e)
 
@@ -162,12 +194,10 @@ class JSPageMiddleware(object):
                 if is_match_wechat:
                     verify_img_element = spider.browser.find_element_by_id('verify_img')
                     if verify_img_element:
-                        print('发现微信验证码...')
-                        # from urllib.request import urlretrieve
-                        # urlretrieve(verify_img_url, 'verifycode.jpeg')
-                        # pass
+                        print('发现微信验证码...尼玛...开始解码...')
+
                         # 截图
-                        spider.browser.get_screenshot_as_file('verifycode.png')
+                        spider.browser.get_screenshot_as_file('wescreenshot_wx.png')
 
                         left = int(verify_img_element.location['x'])
                         top = int(verify_img_element.location['y'])
@@ -176,7 +206,7 @@ class JSPageMiddleware(object):
 
                         from PIL import Image
                         # 通过Image处理图像
-                        im = Image.open('verifycode.png')
+                        im = Image.open('wescreenshot_wx.png')
                         im = im.crop((left, top, right, bottom))
                         # 保存验证码图片
                         im.save('verifycode.png')
@@ -193,13 +223,13 @@ class JSPageMiddleware(object):
                         spider.browser.find_element_by_id("bt").click()
 
                         # 延时5秒，等待完成页面跳转
-                        time.sleep(5)
+                        time.sleep(3)
 
             except Exception as e:
                 print(e)
 
             # 等待加载完成
-            time.sleep(5)
+            time.sleep(3)
 
             return HtmlResponse(
                 url=spider.browser.current_url,

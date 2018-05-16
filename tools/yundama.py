@@ -93,7 +93,7 @@ class YDMHttp:
         return res.text
 
 
-def get_captcha_code(img):
+def get_captcha_code(img, codetype=1004):
     # 用户名
     username = 'marin'
 
@@ -110,7 +110,7 @@ def get_captcha_code(img):
     filename = img
 
     # 验证码类型，# 例：1004表示4位字母数字，不同类型收费不同。请准确填写，否则影响识别率。在此查询所有类型 http://www.yundama.com/price.html
-    codetype = 1004
+    codetype = codetype
 
     # 超时时间，秒
     timeout = 60

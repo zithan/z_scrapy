@@ -30,6 +30,7 @@ class WechatSpider(scrapy.Spider):
         # 艺罗兰灯饰
         # base_url + "YILUOLANLIGHTING"
         # 'https://proxy.mimvp.com/exist.php'
+        # 'http://weixin.sogou.com/antispider/?from=%2fweixin%3Ftype%3d1%26s_from%3dinput%26query%3dnbdnews'
     ]
 
     # headers = {
@@ -92,26 +93,21 @@ class WechatSpider(scrapy.Spider):
         print('sogou response---->' + response.__str__())
 
         # 判断搜狗是否出现验证码
-        if re.match('http://weixin.sogou.com/antispider', response.url):
-            print('搜狗出现验证码2')
-            return
-
-        # try:
-        #     proxy_ip = response.xpath('//*[@id="mimvp-body"]/div[1]/div[1]/span[2]/font[1]/text()').extract()[0].strip()
-        #     print('当前代理ip为{0}'.format(proxy_ip))
+        # if re.match('http://weixin.sogou.com/antispider', response.url):
+        #     print('搜狗出现验证码2')
         #     return
-        # except Exception as e:
-        #     print('查看代理...异常')
-
 
         list_url = response.xpath('//div[@class="news-box"]/ul[@class="news-list2"]/li[1]/div[@class="gzh-box2"]/div[@class="img-box"]/a/@href').extract()
-        print("wechat office url on sogou---->:" + list_url.__str__())
 
         try:
-            print("---------ready to wechat -----------")
-            yield Request(list_url[0], callback=self.parse_list)
+            if list_url:
+                yield Request(list_url[0], callback=self.parse_list)
+                print("wechat office url on sogou---->:" + list_url.__str__())
+            else:
+                yield Request(response.url, callback=self.parse)
+                print("发现搜狗验证码---重定向---->:" + list_url.__str__())
         except Exception as e:
-            print("---获取微信公众号路径异常---")
+            print("---获取微信公众号路径异常---{0}".format(e))
 
         # 提取下一个并交给scrapy进行下载
         # next_urls = ["aluoyidi888", "gh_0f86876af6ce", "opplezm"]
