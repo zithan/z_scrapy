@@ -57,7 +57,7 @@ COOKIES_ENABLED = True
 DOWNLOADER_MIDDLEWARES = {
    # 'xjwSpider.middlewares.XjwspiderDownloaderMiddleware': 1,
     'xjwSpider.middlewares.JSPageMiddleware': 105,
-    'xjwSpider.middlewares.RandomUserAgentMiddlware': 101,
+    # 'xjwSpider.middlewares.RandomUserAgentMiddlware': 101,
     # 'xjwSpider.middlewares.RandomProxyMiddleware': 100,
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,

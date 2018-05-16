@@ -151,8 +151,15 @@ class JSPageMiddleware(object):
             time.sleep(5)
 
             try:
-                is_match = re.match('http://mp.weixin.qq.com/profile', request.url.strip())
-                if is_match:
+                is_match_sogou = re.match('http://weixin.sogou.com/antispider', request.url.strip())
+                if is_match_sogou:
+                    seccode_image = spider.browser.find_element_by_id('seccodeImage')
+            except Exception as e:
+                print(e)
+
+            try:
+                is_match_wechat = re.match('http://mp.weixin.qq.com/profile', request.url.strip())
+                if is_match_wechat:
                     verify_img_element = spider.browser.find_element_by_id('verify_img')
                     if verify_img_element:
                         print('发现微信验证码...')

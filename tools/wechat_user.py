@@ -22,6 +22,13 @@ class WechatUser(object):
         self.cursor.execute(select_sql)
         return self.cursor.fetchall()
 
+    def get_id(self, wechat_id):
+        select_sql = """
+            SELECT `id` FROM users WHERE wechat_id = '{0}'
+        """.format(wechat_id)
+        self.cursor.execute(select_sql)
+        return self.cursor.fetchone()
+
 
 if __name__ == "__main__":
     wechat_user = WechatUser()

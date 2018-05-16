@@ -17,18 +17,11 @@ class XjwspiderItem(scrapy.Item):
     pass
 
 
-def return_value(value):
-    return value
-
-
 class WechatArticleItem(scrapy.Item):
-    id = scrapy.Field()
+    article_hash_id = scrapy.Field()
+    user_id = scrapy.Field()
     title = scrapy.Field()
-    brand = scrapy.Field()
-    create_time = scrapy.Field()
-    author = scrapy.Field()
+    desc = scrapy.Field()
+    publish_time = scrapy.Field()
     content = scrapy.Field()
-    wechat_image_urls = scrapy.Field(
-        output_processor=MapCompose(return_value)
-    )
-    brand_avatar = scrapy.Field()
+    article_icon_path = scrapy.Field()

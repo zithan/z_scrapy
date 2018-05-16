@@ -13,10 +13,7 @@ import hashlib
 import re
 
 from urllib.request import urlretrieve
-from urllib import parse
-
 from tools.get_proxy_ip import GetIpThread
-
 import time
 
 from tools.wechat_user import WechatUser
@@ -202,7 +199,9 @@ class WechatSpider(scrapy.Spider):
                         "article_hash_id": article_hash_id,
                         "title": title,
                         "desc": desc,
-                        "article_icon_path": article_icon_path
+                        "article_icon_path": article_icon_path,
+                        "wechat_id": wechat_id,
+                        "current_day": current_day
                     }
 
                     yield Request(article_url, meta=meta, callback=self.parse_item)
@@ -218,67 +217,72 @@ class WechatSpider(scrapy.Spider):
         title = response.meta.get("title", "")
         desc = response.meta.get("desc", "")
         article_icon_path = response.meta.get("article_icon_path", "")
+        wechat_id = response.meta.get("wechat_id", "")
+        current_day = response.meta.get("current_day", "")
 
         try:
             # var ct = "1526451420";
             text = response.text
-            pulish_time = text[text.find('var ct = "')+10:text.find('var publish_time')].strip()
-            pulish_time = int(pulish_time.rstrip('";'))
+            publish_time = text[text.find('var ct = "')+10:text.find('var publish_time')].strip()
+            publish_time = int(publish_time.rstrip('";'))
 
-            pass
-            author = response.xpath('//*[@id="meta_content"]/p/text()').extract()[0].replace('作者', '').strip()
+            content_imgs = response.xpath('//div[@id="js_content"]//img')
+            # 下载、替换微信文章中的图片
+            for img in content_imgs:
+                img_src = self.get_text(img.xpath('./@src').extract())
+                img_data_src = self.get_text(img.xpath('./@data-src').extract())
+
+                if (img_data_src is None) or img_data_src == '':
+                    img_data_src = img_src
+
+                img_type = self.get_text(img.xpath('./@data-type').extract())
+                if img_type.lower().strip() != "bmp" and img_type.lower().strip() != "jpg" \
+                        and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg":
+                    img_type = "jpg"
+
+                content_img_name = hashlib.md5(img_data_src.encode(encoding='UTF-8')).hexdigest()
+
+                # 相对目录
+                content_img_rel_dir = "images/{0}/{1}/article_content".format(
+                    wechat_id,
+                    current_day
+                )
+
+                # 图片文件相对路径
+                img_path = "{0}/{1}".format(content_img_rel_dir, content_img_name)
+                save_path = "{0}/{1}".format(self.my_save_path, img_path)
+
+                # 绝对目录
+                article_content_abs_dir = "{0}/{1}".format(self.my_save_path, content_img_rel_dir)
+                if not os.path.exists(article_content_abs_dir):
+                    os.makedirs(article_content_abs_dir)
+
+                urlretrieve(img_data_src, save_path)
+
+                img.root.attrib['src'] = img_path
+                img.root.attrib['data-src'] = img_path
+
+            content = self.get_text(response.xpath('//div[@id="js_content"]').extract())
+
+            user_id = WechatUser().get_id(wechat_id)
+            if not user_id:
+                user_id = 0
+
+            article_item = WechatArticleItem()
+
+            article_item["article_hash_id"] = article_hash_id
+            article_item["user_id"] = user_id
+            article_item["title"] = title
+            article_item["desc"] = desc
+            article_item["publish_time"] = publish_time
+            article_item["content"] = content
+            article_item["article_icon_path"] = article_icon_path
+
+            yield article_item
 
         except Exception as e:
             print(e)
 
-        article_content_imgs = response.xpath('//div[@id="js_content"]//img')
-        # 下载、替换微信文章中的图片
-        for img in article_content_imgs:
-            img_src = self.get_text(img.xpath('./@src').extract())
-            img_data_src = self.get_text(img.xpath('./@data-src').extract())
-
-            if img_data_src == None or img_data_src == '':
-                img_data_src = img_src
-
-            img_type = self.get_text(img.xpath('./@data-type').extract())
-            if img_type.lower().strip() != "bmp" and img_type.lower().strip() != "jpg" \
-                    and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg":
-                img_type = "jpg"
-
-            img_name = hashlib.md5(img_data_src.encode(encoding='UTF-8')).hexdigest()
-            abs_path = img_name + '.' + img_type
-            save_path = "/Volumes/zithan4card/z4code/mypython/xjwSpider/xjwSpider/spiders/images/" + abs_path
-
-            # if img_data_src == None or img_data_src == '':
-            #     continue
-
-            # print('img_data_src---->' + img_data_src);
-            urlretrieve(img_data_src, save_path)
-
-            img.root.attrib['src'] = abs_path
-            img.root.attrib['data-src'] = abs_path
-
-        # content = response.xpath('//div[@id="js_content"]').extract()[0]
-        content = self.get_text(response.xpath('//div[@id="js_content"]').extract())
-
-        article_item = WechatArticleItem()
-
-
-        # article_item["id"] = hashlib.md5(response.url.encode(encoding='UTF-8')).hexdigest()
-        # article_item["title"] = title
-        # article_item["brand"] = brand
-        # article_item["create_time"] = create_time
-        # article_item["author"] = author
-        # article_item["content"] = content
-        # article_item["wechat_image_urls"] = [brand_avatar]
-
-        yield article_item
-
-
-    def upload_content_image(self, response):
-        with open(response.meta.get("save_path"), "wb") as f:
-            f.write(response.body)
-            f.close()
 
     def get_text(self, texts):
         text = ""
