@@ -56,7 +56,7 @@ COOKIES_ENABLED = True
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
    # 'xjwSpider.middlewares.XjwspiderDownloaderMiddleware': 1,
-   'xjwSpider.middlewares.JSPageMiddleware': 105,
+    'xjwSpider.middlewares.JSPageMiddleware': 105,
     'xjwSpider.middlewares.RandomUserAgentMiddlware': 101,
     # 'xjwSpider.middlewares.RandomProxyMiddleware': 100,
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
@@ -65,9 +65,12 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+EXTENSIONS = {
+    'scrapy_jsonrpc.webservice.WebService': 500,
+    'scrapy.extensions.telnet.TelnetConsole': None,
+}
+
+JSONRPC_ENABLED = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html

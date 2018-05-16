@@ -144,33 +144,58 @@ class JSPageMiddleware(object):
 
     def process_request(self, request, spider):
         import re
-        is_match = re.match('http://mp.weixin.qq.com/profile', request.url.strip())
-        # is_match = True
-        if spider.name == "wechat" and is_match:
-            # from selenium import webdriver
-            # get_ip = GetIpThread()
-            # ip_and_port = get_ip.get_one_ip()
-            # chrome_options = webdriver.ChromeOptions()
-            # # chrome_options.add_argument('--proxy-server={0}'.format(ip_and_port))
-            #
-            # # prefs = {
-            # #     'profile.default_content_setting_values': {
-            # #         'images': 2
-            # #     }
-            # # }
-            # # chrome_options.add_experimental_option('prefs', prefs)
-            #
-            # browser = webdriver.Chrome(
-            #     executable_path="/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver",
-            #     chrome_options=chrome_options
-            # )
+        if spider.name == "wechat":
 
             spider.browser.get(request.url)
-
-            time.sleep(8)
             print("chromedriver-访问---------->:{0}".format(request.url))
+            time.sleep(5)
+
+            try:
+                is_match = re.match('http://mp.weixin.qq.com/profile', request.url.strip())
+                if is_match:
+                    verify_img_element = spider.browser.find_element_by_id('verify_img')
+                    if verify_img_element:
+                        print('发现微信验证码...')
+                        # from urllib.request import urlretrieve
+                        # urlretrieve(verify_img_url, 'verifycode.jpeg')
+                        # pass
+                        # 截图
+                        spider.browser.get_screenshot_as_file('verifycode.png')
+
+                        left = int(verify_img_element.location['x'])
+                        top = int(verify_img_element.location['y'])
+                        right = int(verify_img_element.location['x'] + verify_img_element.size['width'])
+                        bottom = int(verify_img_element.location['y'] + verify_img_element.size['height'])
+
+                        from PIL import Image
+                        # 通过Image处理图像
+                        im = Image.open('verifycode.png')
+                        im = im.crop((left, top, right, bottom))
+                        # 保存验证码图片
+                        im.save('verifycode.png')
+
+                        # im = open('verifycode.png', 'rb').read()
+                        from tools.yundama import get_captcha_code
+                        code = get_captcha_code('verifycode.png')
+                        print("微信验证码是------>{0}".format(code))
+
+                        # 模拟输入验证码，并提交
+                        elem = spider.browser.find_element_by_id("input")
+                        elem.clear()
+                        elem.send_keys(code)
+                        spider.browser.find_element_by_id("bt").click()
+
+                        # 延时5秒，等待完成页面跳转
+                        time.sleep(5)
+
+            except Exception as e:
+                print(e)
+
+            # 等待加载完成
+            time.sleep(5)
 
             return HtmlResponse(
                 url=spider.browser.current_url,
                 body=spider.browser.page_source,
-                encoding="utf-8", request=request)
+                encoding="utf-8",
+                request=request)
