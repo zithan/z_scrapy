@@ -22,16 +22,16 @@ class WechatSpider(scrapy.Spider):
     name = "wechat"
     base_url = 'http://weixin.sogou.com/weixin?type=1&s_from=input&query='
     allowed_domains = ["weixin.sogou.com", "mp.weixin.qq.com"]
-    start_urls = [
-        # 亚太灯饰传媒
-        base_url + "aluoyidi888",
-        # 每日经济新闻
-        # base_url + "nbdnews",
-        # 艺罗兰灯饰
-        # base_url + "YILUOLANLIGHTING"
-        # 'https://proxy.mimvp.com/exist.php'
-        # 'http://weixin.sogou.com/antispider/?from=%2fweixin%3Ftype%3d1%26s_from%3dinput%26query%3dnbdnews'
-    ]
+    # start_urls = [
+    #     # 亚太灯饰传媒
+    #     base_url + "aluoyidi888",
+    #     # 每日经济新闻
+    #     # base_url + "nbdnews",
+    #     # 艺罗兰灯饰
+    #     # base_url + "YILUOLANLIGHTING"
+    #     # 'https://proxy.mimvp.com/exist.php'
+    #     # 'http://weixin.sogou.com/antispider/?from=%2fweixin%3Ftype%3d1%26s_from%3dinput%26query%3dnbdnews'
+    # ]
 
     # headers = {
     #     "HOST": "img01.sogoucdn.com",
@@ -69,16 +69,16 @@ class WechatSpider(scrapy.Spider):
         print("spider closed----> close chrome.....")
         self.browser.quit()
 
-    # def start_requests(self):
-    #     wechat_ids = WechatUser().get_wechat_ids()
-    #     start_urls_list = []
-    #     for wechat_id in wechat_ids:
-    #         start_urls_list.append(self.base_url + wechat_id["wechat_id"])
-    #
-    #     urls = start_urls_list
-    #
-    #     for url in urls:
-    #         yield scrapy.Request(url=url, callback=self.parse)
+    def start_requests(self):
+        wechat_ids = WechatUser().get_wechat_ids()
+        start_urls_list = []
+        for wechat_id in wechat_ids:
+            start_urls_list.append(self.base_url + wechat_id["wechat_id"])
+
+        urls = start_urls_list
+
+        for url in urls:
+            yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
         """
