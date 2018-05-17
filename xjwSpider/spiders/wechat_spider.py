@@ -169,8 +169,8 @@ class WechatSpider(scrapy.Spider):
 
                     # 相对目录
                     article_icon_rel_dir = "images/{0}/{1}/article_icon".format(
-                        wechat_id,
-                        current_day
+                        current_day,
+                        wechat_id
                     )
 
                     # 图片文件相对路径
@@ -184,7 +184,7 @@ class WechatSpider(scrapy.Spider):
                     save_path = "{0}/{1}".format(article_icon_abs_dir, article_icon_name)
                     urlretrieve(article_icon, save_path)
 
-                    article_path = response.xpath('.//h4[@class="weui_media_title"]/@hrefs').extract_first()
+                    article_path = article.xpath('.//h4[@class="weui_media_title"]/@hrefs').extract_first()
 
                     article_url = "https://mp.weixin.qq.com{0}".format(article_path)
 
@@ -243,6 +243,8 @@ class WechatSpider(scrapy.Spider):
                 if not re.match('http', img_data_src):
                     img_data_src = "http:" + img_data_src
 
+                print('文章内容图片：' + img_data_src)
+
                 img_type = self.get_text(img.xpath('./@data-type').extract())
                 if img_type.lower().strip() != "bmp" and img_type.lower().strip() != "jpg" \
                         and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg":
@@ -254,8 +256,8 @@ class WechatSpider(scrapy.Spider):
 
                 # 相对目录
                 content_img_rel_dir = "images/{0}/{1}/article_content".format(
-                    wechat_id,
-                    current_day)
+                    current_day,
+                    wechat_id)
 
                 # 图片文件相对路径
                 img_path = "{0}/{1}".format(content_img_rel_dir, content_img_name)
@@ -276,6 +278,8 @@ class WechatSpider(scrapy.Spider):
             user_id = WechatUser().get_id(wechat_id)
             if not user_id:
                 user_id = 0
+            else:
+                user_id = user_id["id"]
 
             article_item = WechatArticleItem()
 
