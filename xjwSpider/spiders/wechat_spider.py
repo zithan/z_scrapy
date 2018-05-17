@@ -33,13 +33,12 @@ class WechatSpider(scrapy.Spider):
     #     # 'http://weixin.sogou.com/antispider/?from=%2fweixin%3Ftype%3d1%26s_from%3dinput%26query%3dnbdnews'
     # ]
 
-    # headers = {
-    #     "HOST": "img01.sogoucdn.com",
-    #     "Referer": "http://img01.sogoucdn.com",
-    #     'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0"
-    # }
-
+    # for mac
     my_save_path = "/Volumes/zithan4card/z4code/mypython/xjwSpider"
+    chrome_driver = "/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver"
+    # for win
+    # my_save_path = "E:/xjwpython/z_scrapy"
+    # chrome_driver = "D:/xjwpython/z_scrapy/tools/chromedriver.exe"
 
     def __init__(self):
         chrome_options = webdriver.ChromeOptions()
@@ -55,7 +54,7 @@ class WechatSpider(scrapy.Spider):
         # chrome_options.add_experimental_option('prefs', prefs)
 
         self.browser = webdriver.Chrome(
-            executable_path="/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver",
+            executable_path=self.chrome_driver,
             chrome_options=chrome_options
         )
 
@@ -123,7 +122,7 @@ class WechatSpider(scrapy.Spider):
         # re_math = re.match(".*?('var msgList = \'{'.*'}}]}\';').*?", response.text)
 
         date = datetime.now().timetuple()
-        dateStr = str(date.tm_year) + u'年' + str(date.tm_mon) + u'月' + str(date.tm_mday-1) + u'日'
+        dateStr = str(date.tm_year) + u'年' + str(date.tm_mon) + u'月' + str(date.tm_mday) + u'日'
 
         try:
             today_cards = response.xpath('//*[@id="history"]/div[1]/div[@class="weui_msg_card_hd"]/text()')\
@@ -159,7 +158,7 @@ class WechatSpider(scrapy.Spider):
                     article_icon_style = article.xpath('./span[@class="weui_media_hd"]/@style').extract_first()
                     article_icon = article_icon_style[article_icon_style.find("url(") + 4:article_icon_style.find(")")]
 
-                    current_day = "{0}_{1}_{2}".format(date.tm_year, date.tm_mon, date.tm_mday)
+                    current_day = time.strftime("%Y%m%d", time.localtime())
 
                     # 图片文件名
                     article_icon_name = "{0}.{1}".format(
@@ -168,10 +167,7 @@ class WechatSpider(scrapy.Spider):
                     )
 
                     # 相对目录
-                    article_icon_rel_dir = "images/{0}/{1}/article_icon".format(
-                        current_day,
-                        wechat_id
-                    )
+                    article_icon_rel_dir = "wximg/{0}".format(current_day)
 
                     # 图片文件相对路径
                     article_icon_path = "{0}/{1}".format(article_icon_rel_dir, article_icon_name)
@@ -231,6 +227,15 @@ class WechatSpider(scrapy.Spider):
                     print
                     "del href exception:" + e.__str__()
 
+            # 删除iframe
+            article_content_iframes = response.xpath('//div[@id="js_content"]//iframe')
+            for iframe in article_content_iframes:
+                try:
+                    iframe.root.getparent().drop_tree()
+                except Exception as e:
+                    print
+                    "del iframe exception:" + e.__str__()
+
             content_imgs = response.xpath('//div[@id="js_content"]//img')
             # 下载、替换微信文章中的图片
             for img in content_imgs:
@@ -240,14 +245,18 @@ class WechatSpider(scrapy.Spider):
                 if (img_data_src is None) or img_data_src == '':
                     img_data_src = img_src
 
-                if not re.match('http', img_data_src):
-                    img_data_src = "http:" + img_data_src
+                # 将原图片路径地址补全下载
+                if not img_data_src.startswith("http"):
+                    img_data_src = response.urljoin(img_data_src)
+                # if not re.match('http', img_data_src):
+                #     img_data_src = "http:" + img_data_src
 
                 print('文章内容图片：' + img_data_src)
 
                 img_type = self.get_text(img.xpath('./@data-type').extract())
                 if img_type.lower().strip() != "bmp" and img_type.lower().strip() != "jpg" \
-                        and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg":
+                        and img_type.lower().strip() != "png" and img_type.lower().strip() != "jpeg" \
+                        and img_type.lower().strip() != "gif":
                     img_type = "jpg"
 
                 content_img_name = "{0}.{1}".format(
@@ -255,9 +264,7 @@ class WechatSpider(scrapy.Spider):
                     img_type)
 
                 # 相对目录
-                content_img_rel_dir = "images/{0}/{1}/article_content".format(
-                    current_day,
-                    wechat_id)
+                content_img_rel_dir = "wximg/{0}".format(current_day)
 
                 # 图片文件相对路径
                 img_path = "{0}/{1}".format(content_img_rel_dir, content_img_name)
@@ -272,6 +279,8 @@ class WechatSpider(scrapy.Spider):
 
                 img.root.attrib['src'] = img_path
                 img.root.attrib['data-src'] = img_path
+                img.root.attrib['data-before-oversubscription-url'] = ''
+                img.root.attrib['data-oversubscription-url'] = ''
 
             content = self.get_text(response.xpath('//div[@id="js_content"]').extract())
 

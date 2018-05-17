@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="697a170e-df09-42e6-9391-0f83f82d98e6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/tools/wechat_user.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/wechat_user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/xjwSpider/pipelines.py" beforeDir="false" afterPath="$PROJECT_DIR$/xjwSpider/pipelines.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xjwSpider/spiders/wechat_spider.py" beforeDir="false" afterPath="$PROJECT_DIR$/xjwSpider/spiders/wechat_spider.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,18 +15,18 @@
     <SUITE FILE_PATH="coverage/xjwSpider$get_proxy_ip.coverage" NAME="get_proxy_ip Coverage Results" MODIFIED="1526217157924" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/xjwSpider$yundama.coverage" NAME="yundama Coverage Results" MODIFIED="1526448885626" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
     <SUITE FILE_PATH="coverage/xjwSpider$wechat_user.coverage" NAME="wechat_user Coverage Results" MODIFIED="1526369490042" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tools" />
-    <SUITE FILE_PATH="coverage/xjwSpider$main.coverage" NAME="main Coverage Results" MODIFIED="1526527598620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/xjwSpider$main.coverage" NAME="main Coverage Results" MODIFIED="1526550510189" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/xjwSpider$wechat_spider.coverage" NAME="wechat_spider Coverage Results" MODIFIED="1526357184914" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/xjwSpider/spiders" />
     <SUITE FILE_PATH="coverage/xjwSpider$middlewares.coverage" NAME="middlewares Coverage Results" MODIFIED="1526442487132" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/xjwSpider" />
     <SUITE FILE_PATH="coverage/xjwSpider$common.coverage" NAME="common Coverage Results" MODIFIED="1526356701280" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/utils" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="wechat_spider.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="wechat_spider.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/xjwSpider/spiders/wechat_spider.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1795">
-              <caret line="89" column="11" lean-forward="true" selection-start-line="89" selection-start-column="11" selection-end-line="89" selection-end-column="11" />
+            <state relative-caret-position="421">
+              <caret line="40" column="8" selection-start-line="39" selection-start-column="6" selection-end-line="40" selection-end-column="8" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -36,22 +34,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="wechat_user.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tools/wechat_user.py">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="12" column="25" lean-forward="true" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pipelines.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/xjwSpider/pipelines.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="540">
-              <caret line="25" column="39" lean-forward="true" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
+            <state relative-caret-position="198">
+              <caret line="9" selection-start-line="9" selection-end-line="9" />
               <folding>
-                <element signature="e#194#216#0" expanded="true" />
+                <element signature="e#23#57#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -91,6 +80,8 @@
       <find>DOWNLOAD_TIMEOUT</find>
       <find>digest</find>
       <find>weixin_article_id</find>
+      <find>del href exception</find>
+      <find>self.get_text(img.xpath('./@data-type').extract())</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -117,9 +108,9 @@
         <option value="$PROJECT_DIR$/tools/yundama.py" />
         <option value="$PROJECT_DIR$/xjwSpider/settings.py" />
         <option value="$PROJECT_DIR$/xjwSpider/middlewares.py" />
-        <option value="$PROJECT_DIR$/xjwSpider/spiders/wechat_spider.py" />
         <option value="$PROJECT_DIR$/tools/wechat_user.py" />
         <option value="$PROJECT_DIR$/xjwSpider/pipelines.py" />
+        <option value="$PROJECT_DIR$/xjwSpider/spiders/wechat_spider.py" />
       </list>
     </option>
   </component>
@@ -132,7 +123,8 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
+    <option name="x" value="2" />
     <option name="y" value="23" />
     <option name="width" value="1920" />
     <option name="height" value="1053" />
@@ -155,6 +147,11 @@
               <item name="xjwSpider" type="b2602c69:ProjectViewProjectNode" />
               <item name="xjwSpider" type="462c0819:PsiDirectoryNode" />
               <item name="tools" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="xjwSpider" type="b2602c69:ProjectViewProjectNode" />
+              <item name="xjwSpider" type="462c0819:PsiDirectoryNode" />
+              <item name="wximg" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="xjwSpider" type="b2602c69:ProjectViewProjectNode" />
@@ -329,16 +326,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2" y="23" width="1920" height="1053" extended-state="6" />
+    <frame x="2" y="23" width="1920" height="1053" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3279743" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.22186495" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3279743" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.3290461" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.33547696" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.28403002" />
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24121405" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
@@ -389,13 +386,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/xjwSpider/pipelines.py</url>
-          <line>31</line>
-          <option name="timeStamp" value="183" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -407,23 +397,10 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/images/nbdnews/2018_5_17/article_content/bc483727a5170e053b4afb3eb1f5d4ed.jpeg">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/xjwSpider/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="522">
           <caret line="70" column="3" selection-start-line="70" selection-start-column="3" selection-end-line="70" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/xjwSpider/items.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="87">
-          <caret line="15" column="27" selection-start-line="15" selection-start-column="27" selection-end-line="15" selection-end-column="27" />
-          <folding>
-            <element signature="e#153#166#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -513,16 +490,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
-          <folding>
-            <element signature="e#23#57#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/images/2018_5_17/aluoyidi888/article_icon/6292bb3cacf936d37b778b5fd122726b.jpg">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -608,29 +575,52 @@
     <entry file="file://$PROJECT_DIR$/wescreenshot_wx.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/xjwSpider/spiders/wechat_spider.py">
+    <entry file="file://$PROJECT_DIR$/xjwSpider/items.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1795">
-          <caret line="89" column="11" lean-forward="true" selection-start-line="89" selection-start-column="11" selection-end-line="89" selection-end-column="11" />
+        <state relative-caret-position="396">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#153#166#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tools/wechat_user.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="12" column="25" lean-forward="true" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
+        <state relative-caret-position="148">
+          <caret line="12" column="25" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/xjwSpider/pipelines.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="25" column="39" lean-forward="true" selection-start-line="25" selection-start-column="39" selection-end-line="25" selection-end-column="39" />
+        <state relative-caret-position="458">
+          <caret line="47" column="36" lean-forward="true" selection-start-line="47" selection-start-column="36" selection-end-line="47" selection-end-column="36" />
           <folding>
             <element signature="e#194#216#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="9" selection-start-line="9" selection-end-line="9" />
+          <folding>
+            <element signature="e#23#57#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/wximg/2018-05-17/0c7d5dce4900e279497d14247fe0e93d.jpg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/xjwSpider/spiders/wechat_spider.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="421">
+          <caret line="40" column="8" selection-start-line="39" selection-start-column="6" selection-end-line="40" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
