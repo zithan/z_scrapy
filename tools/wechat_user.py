@@ -7,10 +7,10 @@ import pymysql.cursors
 class WechatUser(object):
     # 采用同步的机制写入mysql
     def __init__(self):
-        self.conn = pymysql.connect(host='192.168.6.251',
-                             user='deng',
-                             password='deng123',
-                             db='test',
+        self.conn = pymysql.connect(host='39.108.111.29',
+                             user='zithan',
+                             password='Marin920',
+                             db='wechat',
                              charset='utf8',
                              cursorclass=pymysql.cursors.DictCursor)
         self.cursor = self.conn.cursor()

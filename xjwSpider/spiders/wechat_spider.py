@@ -22,22 +22,21 @@ class WechatSpider(scrapy.Spider):
     name = "wechat"
     base_url = 'http://weixin.sogou.com/weixin?type=1&s_from=input&query='
     allowed_domains = ["weixin.sogou.com", "mp.weixin.qq.com"]
-    # start_urls = [
-    #     # 亚太灯饰传媒
-    #     base_url + "aluoyidi888",
-    #     # 每日经济新闻
-    #     # base_url + "nbdnews",
-    #     # 艺罗兰灯饰
-    #     # base_url + "YILUOLANLIGHTING"
-    #     # 'https://proxy.mimvp.com/exist.php'
-    #     # 'http://weixin.sogou.com/antispider/?from=%2fweixin%3Ftype%3d1%26s_from%3dinput%26query%3dnbdnews'
-    # ]
+    start_urls = [
+        # 亚太灯饰传媒
+        base_url + "yitiaotv",
+        # 每日经济新闻
+        # base_url + "nbdnews",
+        # 艺罗兰灯饰
+        # base_url + "YILUOLANLIGHTING"
+        # 'https://proxy.mimvp.com/exist.php'
+    ]
 
     # for mac
     my_save_path = "/Volumes/zithan4card/z4code/mypython/xjwSpider"
     chrome_driver = "/Volumes/zithan4card/z4code/mypython/xjwSpider/tools/chromedriver"
     # for win
-    # my_save_path = "E:/xjwpython/z_scrapy"
+    # my_save_path = "D:/xjwpython/z_scrapy"
     # chrome_driver = "D:/xjwpython/z_scrapy/tools/chromedriver.exe"
 
     def __init__(self):
@@ -68,16 +67,16 @@ class WechatSpider(scrapy.Spider):
         print("spider closed----> close chrome.....")
         self.browser.quit()
 
-    def start_requests(self):
-        wechat_ids = WechatUser().get_wechat_ids()
-        start_urls_list = []
-        for wechat_id in wechat_ids:
-            start_urls_list.append(self.base_url + wechat_id["wechat_id"])
-
-        urls = start_urls_list
-
-        for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+    # def start_requests(self):
+    #     wechat_ids = WechatUser().get_wechat_ids()
+    #     start_urls_list = []
+    #     for wechat_id in wechat_ids:
+    #         start_urls_list.append(self.base_url + wechat_id["wechat_id"])
+    #
+    #     urls = start_urls_list
+    #
+    #     for url in urls:
+    #         yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
         """
@@ -108,18 +107,9 @@ class WechatSpider(scrapy.Spider):
         except Exception as e:
             print("---获取微信公众号路径异常---{0}".format(e))
 
-        # 提取下一个并交给scrapy进行下载
-        # next_urls = ["aluoyidi888", "gh_0f86876af6ce", "opplezm"]
-        #
-        # for next_url in next_urls:
-        #     print('----next office is [{0}]-------'.format(next_url))
-        #     yield Request(url=self.base_url + next_url, callback=self.parse)
-
     def parse_list(self, response):
         print('[wechat list] url---->' + response.url)
         print('[wechat list] response---->' + response.__str__())
-
-        # re_math = re.match(".*?('var msgList = \'{'.*'}}]}\';').*?", response.text)
 
         date = datetime.now().timetuple()
         dateStr = str(date.tm_year) + u'年' + str(date.tm_mon) + u'月' + str(date.tm_mday) + u'日'
@@ -132,16 +122,16 @@ class WechatSpider(scrapy.Spider):
 
         if dateStr != today_cards:
             print('今天[没]更新，今天是----->' + today_cards)
+            return
         else:
             print('今天[有]更新，今天是----->' + today_cards)
 
             try:
                 wechat_profile = response.xpath('//p[@class="profile_account"]/text()').extract_first().strip()
-                match_re = re.match(".*?([A-Za-z0-9_]+).*", wechat_profile)
+                match_re = re.match(".*?([A-Za-z0-9_\-]+).*", wechat_profile)
                 wechat_id = match_re.group(1)
 
                 msg_card_first = response.xpath('//div[@id="history"]/div[1]/div[2]')
-                # msg_card_first2 = response.xpath('/html/body/div/div[1]/div[3]/div[1]/div[2]')
 
                 article_list = msg_card_first.xpath('./div')
 
@@ -215,8 +205,8 @@ class WechatSpider(scrapy.Spider):
         try:
             # var ct = "1526451420";
             text = response.text
-            publish_time = text[text.find('var ct = "')+10:text.find('var publish_time')].strip()
-            publish_time = int(publish_time.rstrip('";'))
+            ct_index = text.find('var ct="')+8
+            publish_time = int(text[ct_index:ct_index+10].strip())
 
             # 删除超链接
             article_content_hrefs = response.xpath('//div[@id="js_content"]//a')
@@ -235,6 +225,12 @@ class WechatSpider(scrapy.Spider):
                 except Exception as e:
                     print
                     "del iframe exception:" + e.__str__()
+
+            # 删除包含"阅读原文"字样的节点的整个父节点
+            bottom_ps = response.xpath(
+                '//div[@id="js_content"]//div[@class="rich_media_tool"]//a[contains(./text(), "阅读原文")]')
+            for a in bottom_ps:
+                a.root.getparent().drop_tree()
 
             content_imgs = response.xpath('//div[@id="js_content"]//img')
             # 下载、替换微信文章中的图片
